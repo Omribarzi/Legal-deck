@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>תכנית עסקית — שירותי עריכת דין בעידן ה-AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Heebo', sans-serif;
+  background: #0F172A;
+  color: #CBD5E1;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.bg-orb-1 {
+  position: fixed; top: -20%; right: -10%; width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.bg-orb-2 {
+  position: fixed; bottom: -20%; left: -10%; width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(8,145,178,0.06) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.container {
+  max-width: 520px; margin: 0 auto; padding: 20px; position: relative; z-index: 1;
+}
+.slide {
+  display: none;
+  animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  min-height: calc(100vh - 100px);
+  padding-bottom: 80px;
+}
+.slide.active { display: flex; flex-direction: column; justify-content: center; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cover */
+.cover { text-align: center; align-items: center; }
+.cover .tag {
+  font-size: 13px; letter-spacing: 6px; color: #94A3B8; margin-bottom: 24px; font-weight: 300;
+}
+.cover h1 {
+  font-size: clamp(34px, 6vw, 52px); font-weight: 800; color: #F8FAFC; line-height: 1.2; margin-bottom: 16px;
+}
+.cover .gradient-text {
+  background: linear-gradient(135deg, #7C3AED, #0891B2);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.cover .subtitle {
+  font-size: 17px; color: #94A3B8; line-height: 1.7; font-weight: 300;
+}
+.cover .hint {
+  margin-top: 48px; color: #64748B; font-size: 13px; display: flex; align-items: center; gap: 8px; justify-content: center;
+}
+
+/* Header */
+.slide-header { margin-bottom: 24px; }
+.slide-header .num { font-size: 11px; color: #64748B; letter-spacing: 3px; margin-bottom: 8px; font-weight: 500; }
+.slide-header h2 {
+  font-size: clamp(24px, 4vw, 32px); font-weight: 800; color: #F8FAFC; line-height: 1.2; margin-bottom: 6px;
+}
+.slide-header p { font-size: 14px; color: #64748B; }
+
+/* Stats */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 24px;
+}
+.stat-card {
+  background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.15);
+  border-radius: 16px; padding: 22px 14px; text-align: center;
+}
+.stat-num {
+  font-size: clamp(30px, 5vw, 42px); font-weight: 800;
+  background: linear-gradient(135deg, #7C3AED, #0891B2);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 12px; color: #CBD5E1; margin-top: 4px; }
+.stat-trend { font-size: 11px; color: #22D3EE; margin-top: 4px; font-weight: 600; }
+.note-box {
+  font-size: 14px; color: #94A3B8; line-height: 1.8; white-space: pre-line;
+  background: rgba(15,23,42,0.5); border-radius: 12px; padding: 16px 20px;
+  border-right: 3px solid #7C3AED;
+}
+
+/* Problem cards */
+.problem-card {
+  background: rgba(30,41,59,0.5); border: 1px solid rgba(51,65,85,0.5);
+  border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 12px;
+}
+.problem-card.highlight {
+  background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(8,145,178,0.15));
+  border: 1px solid rgba(124,58,237,0.4); transform: scale(1.02);
+}
+.problem-icon { font-size: 30px; flex-shrink: 0; }
+.problem-info { flex: 1; }
+.problem-title { font-weight: 700; font-size: 15px; color: #CBD5E1; }
+.highlight .problem-title { color: #E0E7FF; }
+.problem-desc { font-size: 12px; color: #94A3B8; margin-top: 3px; }
+.problem-price { font-size: 14px; font-weight: 700; color: #64748B; white-space: nowrap; }
+.highlight .problem-price { color: #22D3EE; }
+
+/* Service cards */
+.service-card {
+  background: rgba(30,41,59,0.5); border: 1px solid rgba(51,65,85,0.5);
+  border-radius: 14px; padding: 16px; margin-bottom: 10px;
+}
+.service-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.service-emoji { font-size: 20px; }
+.service-name { font-weight: 700; font-size: 15px; color: #E2E8F0; }
+.service-margin {
+  font-size: 11px; color: #22D3EE; font-weight: 600;
+  background: rgba(8,145,178,0.15); padding: 2px 10px; border-radius: 20px; margin-right: auto; margin-left: 0;
+}
+.service-why { font-size: 12px; color: #94A3B8; }
+.service-price { font-size: 14px; color: #A78BFA; font-weight: 600; margin-top: 5px; }
+.bundle-box {
+  background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(8,145,178,0.12));
+  border: 1px solid rgba(124,58,237,0.25); border-radius: 12px; padding: 14px 18px;
+  text-align: center; font-size: 14px; font-weight: 600; color: #E0E7FF; margin-top: 8px;
+}
+
+/* Roles */
+.role-card {
+  background: rgba(30,41,59,0.5); border-radius: 16px; padding: 22px; margin-bottom: 14px;
+}
+.role-card.purple { border: 1px solid rgba(124,58,237,0.2); border-right: 4px solid #7C3AED; }
+.role-card.cyan { border: 1px solid rgba(8,145,178,0.2); border-right: 4px solid #0891B2; }
+.role-person { font-size: 20px; font-weight: 700; margin-bottom: 14px; }
+.role-card.purple .role-person { color: #7C3AED; }
+.role-card.cyan .role-person { color: #0891B2; }
+.role-task { font-size: 13px; color: #CBD5E1; margin-bottom: 7px; display: flex; align-items: center; gap: 8px; }
+.role-card.purple .dot { color: #7C3AED; }
+.role-card.cyan .dot { color: #0891B2; }
+.role-time { font-size: 12px; color: #64748B; margin-top: 8px; }
+
+/* Investment */
+.inv-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 14px; background: rgba(30,41,59,0.4); border-radius: 10px;
+  border: 1px solid rgba(51,65,85,0.3); margin-bottom: 7px;
+}
+.inv-label { font-size: 13px; color: #CBD5E1; }
+.inv-note { font-size: 11px; color: #64748B; margin-right: 6px; }
+.inv-cost { font-weight: 700; font-size: 14px; color: #E2E8F0; white-space: nowrap; }
+.inv-cost.free { color: #22D3EE; }
+.total-box {
+  background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(8,145,178,0.15));
+  border-radius: 16px; padding: 24px; text-align: center;
+  border: 1px solid rgba(124,58,237,0.3); margin-top: 20px;
+}
+.total-num {
+  font-size: clamp(28px, 5vw, 36px); font-weight: 800;
+  background: linear-gradient(135deg, #7C3AED, #0891B2);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.total-label { font-size: 14px; color: #94A3B8; margin-top: 6px; }
+.total-break { font-size: 15px; color: #22D3EE; margin-top: 10px; font-weight: 600; }
+
+/* Forecast */
+.forecast-row {
+  background: rgba(30,41,59,0.5); border: 1px solid rgba(51,65,85,0.5);
+  border-radius: 14px; padding: 16px; display: flex; justify-content: space-between;
+  align-items: center; gap: 12px; margin-bottom: 10px;
+}
+.forecast-period { font-weight: 700; color: #E2E8F0; font-size: 15px; }
+.forecast-note { font-size: 11px; color: #64748B; margin-top: 3px; }
+.forecast-cases { font-size: 12px; color: #94A3B8; }
+.forecast-rev { font-size: 15px; font-weight: 700; color: #22D3EE; }
+.forecast-summary {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;
+}
+.summary-card {
+  border-radius: 14px; padding: 20px; text-align: center;
+}
+.summary-card.purple {
+  background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(124,58,237,0.05));
+  border: 1px solid rgba(124,58,237,0.25);
+}
+.summary-card.cyan {
+  background: linear-gradient(135deg, rgba(8,145,178,0.15), rgba(8,145,178,0.05));
+  border: 1px solid rgba(8,145,178,0.25);
+}
+.summary-label { font-size: 12px; color: #94A3B8; }
+.summary-card.purple .summary-val { font-size: 18px; font-weight: 800; color: #A78BFA; margin-top: 4px; }
+.summary-card.cyan .summary-val { font-size: 18px; font-weight: 800; color: #22D3EE; margin-top: 4px; }
+
+/* Timing */
+.timing-row {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(30,41,59,0.4); border-radius: 12px; padding: 15px 16px;
+  border: 1px solid rgba(51,65,85,0.3); margin-bottom: 10px;
+}
+.timing-icon { font-size: 22px; flex-shrink: 0; }
+.timing-text { font-size: 14px; color: #CBD5E1; line-height: 1.5; }
+
+/* Next steps */
+.step-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 16px; background: rgba(30,41,59,0.4); border-radius: 12px;
+  border: 1px solid rgba(51,65,85,0.3); margin-bottom: 8px;
+}
+.step-num {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #7C3AED, #0891B2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: #fff;
+}
+.step-text { flex: 1; font-size: 13px; color: #CBD5E1; }
+.step-time { font-size: 11px; color: #64748B; white-space: nowrap; }
+.closing-box {
+  background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(8,145,178,0.12));
+  border: 1px solid rgba(124,58,237,0.25); border-radius: 16px; padding: 24px;
+  text-align: center; white-space: pre-line; font-size: 15px; line-height: 1.8;
+  color: #E0E7FF; font-weight: 500; margin-top: 24px;
+}
+
+/* Navigation */
+.nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  display: flex; justify-content: center; align-items: center; gap: 12px;
+  padding: 16px 20px; z-index: 10;
+  background: linear-gradient(to top, #0F172A 60%, transparent);
+}
+.nav-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 1px solid rgba(100,116,139,0.3); background: rgba(30,41,59,0.8);
+  color: #CBD5E1; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px); transition: all 0.2s;
+}
+.nav-btn:disabled { background: transparent; color: #334155; cursor: default; }
+.nav-btn:hover:not(:disabled) { transform: scale(1.08); }
+.dots { display: flex; gap: 6px; }
+.dot-btn {
+  height: 8px; border-radius: 4px; border: none; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1); padding: 0;
+}
+.dot-btn.active {
+  width: 24px; background: linear-gradient(135deg, #7C3AED, #0891B2);
+}
+.dot-btn:not(.active) {
+  width: 8px; background: rgba(100,116,139,0.3);
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orb-1"></div>
+<div class="bg-orb-2"></div>
+
+<div class="container">
+
+  <!-- Slide 0: Cover -->
+  <div class="slide cover active" data-slide="0">
+    <div class="tag">תכנית עסקית</div>
+    <h1>שירותי עריכת דין<br><span class="gradient-text">בעידן ה-AI</span></h1>
+    <p class="subtitle">הרישיון שלך + הטכנולוגיה שלי<br>= עסק רווחי עם margin של 80%</p>
+    <div class="hint"><span>החליקו שמאלה כדי להמשיך</span> <span style="font-size:18px">←</span></div>
+  </div>
+
+  <!-- Slide 1: Stats -->
+  <div class="slide" data-slide="1">
+    <div class="slide-header">
+      <div class="num">1 / 8</div>
+      <h2>מה קורה בשוק?</h2>
+      <p>52,000 ישראלים הפקידו ייפוי כוח מתמשך ב-2024</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num">52K</div>
+        <div class="stat-label">הפקדות ייפוי כוח בשנה</div>
+        <div class="stat-trend">+15% שנתי</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">134K</div>
+        <div class="stat-label">חיפושים/חודש על ירושה</div>
+        <div class="stat-trend">ביקוש עצום</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">0</div>
+        <div class="stat-label">מודעות Google Ads</div>
+        <div class="stat-trend">אין תחרות ממומנת</div>
+      </div>
+    </div>
+    <div class="note-box">אלפי אנשים מחפשים בגוגל כל יום את השירותים האלה.
+כמעט אף עורך דין לא מפרסם בצורה דיגיטלית.</div>
+  </div>
+
+  <!-- Slide 2: Problem -->
+  <div class="slide" data-slide="2">
+    <div class="slide-header">
+      <div class="num">2 / 8</div>
+      <h2>הבעיה</h2>
+      <p>איך השוק נראה היום</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">🏢</div>
+      <div class="problem-info">
+        <div class="problem-title">משרד מסורתי</div>
+        <div class="problem-desc">פגישות פרונטליות, זמינות מוגבלת, תהליך ארוך</div>
+      </div>
+      <div class="problem-price">5,000-8,000 ₪</div>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">💻</div>
+      <div class="problem-info">
+        <div class="problem-title">דיגיטלי (מתחרים)</div>
+        <div class="problem-desc">זום + טלפון, בלי AI, בלי צ'אטבוט, בלי שקיפות מחירים</div>
+      </div>
+      <div class="problem-price">3,000-5,000 ₪</div>
+    </div>
+    <div class="problem-card highlight">
+      <div class="problem-icon">✨</div>
+      <div class="problem-info">
+        <div class="problem-title">אנחנו</div>
+        <div class="problem-desc">WhatsApp 24/7, AI לטיוטות, מחשבון מחירים שקוף, תהליך מהיר</div>
+      </div>
+      <div class="problem-price">2,500-4,000 ₪</div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Services -->
+  <div class="slide" data-slide="3">
+    <div class="slide-header">
+      <div class="num">3 / 8</div>
+      <h2>מה אנחנו מציעים</h2>
+      <p>3 שירותים, התמחות אחת</p>
+    </div>
+    <div class="service-card">
+      <div class="service-top">
+        <span class="service-emoji">📋</span>
+        <span class="service-name">ייפוי כוח מתמשך</span>
+        <span class="service-margin">margin ~85%</span>
+      </div>
+      <div class="service-why">מוצר דגל — ביקוש גדל 15% בשנה, תחרות אפסית בפרסום</div>
+      <div class="service-price">2,500 ₪ יחיד · 4,000 ₪ זוג</div>
+    </div>
+    <div class="service-card">
+      <div class="service-top">
+        <span class="service-emoji">⚖️</span>
+        <span class="service-name">צווי ירושה וצוואות</span>
+        <span class="service-margin">margin ~80%</span>
+      </div>
+      <div class="service-why">הנפח הגדול ביותר — 134K חיפושים/חודש</div>
+      <div class="service-price">1,200-2,000 ₪</div>
+    </div>
+    <div class="service-card">
+      <div class="service-top">
+        <span class="service-emoji">💍</span>
+        <span class="service-name">הסכמי ממון</span>
+        <span class="service-margin">margin ~75%</span>
+      </div>
+      <div class="service-why">קהל שונה (זוגות צעירים), הכנסה גבוהה לתיק</div>
+      <div class="service-price">3,000-6,000 ₪</div>
+    </div>
+    <div class="bundle-box">חבילת "שקט נפשי" — ייפוי כוח + צוואה לזוג: 5,500 ₪</div>
+  </div>
+
+  <!-- Slide 4: Roles -->
+  <div class="slide" data-slide="4">
+    <div class="slide-header">
+      <div class="num">4 / 8</div>
+      <h2>חלוקת תפקידים</h2>
+      <p>כל אחד עושה מה שהוא הכי טוב בו</p>
+    </div>
+    <div class="role-card purple">
+      <div class="role-person">👩‍⚖️ את</div>
+      <div class="role-task"><span class="dot" style="font-size:8px">●</span> הכשרת ייפוי כוח מתמשך (יומיים)</div>
+      <div class="role-task"><span class="dot" style="font-size:8px">●</span> בדיקה ואישור כל מסמך</div>
+      <div class="role-task"><span class="dot" style="font-size:8px">●</span> פגישות זום/טלפון עם לקוחות</div>
+      <div class="role-task"><span class="dot" style="font-size:8px">●</span> החתימה המשפטית הסופית</div>
+      <div class="role-time">2-3 שעות ליום בהתחלה</div>
+    </div>
+    <div class="role-card cyan">
+      <div class="role-person">💻 אני</div>
+      <div class="role-task"><span class="dot" style="font-size:8px">●</span> בניית האתר, CRM וצ'אטבוט</div>
+      <div class="role-task"><span class="dot" style="font-size:8px">●</span> ניהול קמפיינים (Google + Facebook)</div>
+      <div class="role-task"><span class="dot" style="font-size:8px">●</span> אוטומציית AI לטיוטות מסמכים</div>
+      <div class="role-task"><span class="dot" style="font-size:8px">●</span> שיווק, SEO ותוכן</div>
+      <div class="role-time">הכל ברקע, אוטומטי ברובו</div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Investment -->
+  <div class="slide" data-slide="5">
+    <div class="slide-header">
+      <div class="num">5 / 8</div>
+      <h2>כמה זה עולה להתחיל</h2>
+      <p>השקעה מינימלית, סיכון נמוך</p>
+    </div>
+    <div class="inv-row">
+      <div><span class="inv-label">בניית אתר + CRM + צ'אטבוט</span> <span class="inv-note">אני בונה</span></div>
+      <span class="inv-cost free">0 ₪</span>
+    </div>
+    <div class="inv-row">
+      <div><span class="inv-label">הכשרת ייפוי כוח</span> <span class="inv-note">יומיים בזום</span></div>
+      <span class="inv-cost">~2,000 ₪</span>
+    </div>
+    <div class="inv-row">
+      <div><span class="inv-label">פרסום Google — חודש ראשון</span> <span class="inv-note">50 ₪/יום</span></div>
+      <span class="inv-cost">1,500 ₪</span>
+    </div>
+    <div class="inv-row">
+      <div><span class="inv-label">דומיין + אחסון</span> <span class="inv-note">שנתי</span></div>
+      <span class="inv-cost">300 ₪</span>
+    </div>
+    <div class="inv-row">
+      <div><span class="inv-label">כלי AI (API)</span> <span class="inv-note">חודשי</span></div>
+      <span class="inv-cost">200 ₪</span>
+    </div>
+    <div class="total-box">
+      <div class="total-num">~4,000 ₪</div>
+      <div class="total-label">סה״כ השקעה ראשונית</div>
+      <div class="total-break">2 תיקי ייפוי כוח = break-even</div>
+    </div>
+  </div>
+
+  <!-- Slide 6: Forecast -->
+  <div class="slide" data-slide="6">
+    <div class="slide-header">
+      <div class="num">6 / 8</div>
+      <h2>כמה אפשר להרוויח</h2>
+      <p>תחזית שמרנית לשנה ראשונה</p>
+    </div>
+    <div class="forecast-row">
+      <div>
+        <div class="forecast-period">חודשים 1-3</div>
+        <div class="forecast-note">הקמה + הכשרה + לידים ראשונים</div>
+      </div>
+      <div style="text-align:left">
+        <div class="forecast-cases">3-8 תיקים/חודש</div>
+        <div class="forecast-rev">8K-25K ₪/חודש</div>
+      </div>
+    </div>
+    <div class="forecast-row">
+      <div>
+        <div class="forecast-period">חודשים 4-6</div>
+        <div class="forecast-note">SEO מתחיל לעבוד + ביקורות</div>
+      </div>
+      <div style="text-align:left">
+        <div class="forecast-cases">10-18 תיקים/חודש</div>
+        <div class="forecast-rev">25K-55K ₪/חודש</div>
+      </div>
+    </div>
+    <div class="forecast-row">
+      <div>
+        <div class="forecast-period">חודשים 7-12</div>
+        <div class="forecast-note">שלושת השירותים פעילים</div>
+      </div>
+      <div style="text-align:left">
+        <div class="forecast-cases">15-30 תיקים/חודש</div>
+        <div class="forecast-rev">40K-100K ₪/חודש</div>
+      </div>
+    </div>
+    <div class="forecast-summary">
+      <div class="summary-card purple">
+        <div class="summary-label">יעד שנתי</div>
+        <div class="summary-val">400K-700K ₪</div>
+      </div>
+      <div class="summary-card cyan">
+        <div class="summary-label">רווח נקי</div>
+        <div class="summary-val">~70-80%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Timing -->
+  <div class="slide" data-slide="7">
+    <div class="slide-header">
+      <div class="num">7 / 8</div>
+      <h2>למה עכשיו</h2>
+      <p>חלון הזדמנויות שנסגר</p>
+    </div>
+    <div class="timing-row"><span class="timing-icon">📈</span><span class="timing-text">52,000 הפקדות בשנה וגדל — הביקוש בשיא</span></div>
+    <div class="timing-row"><span class="timing-icon">🔇</span><span class="timing-text">אפס מודעות Google — ראשונים לשוק</span></div>
+    <div class="timing-row"><span class="timing-icon">📜</span><span class="timing-text">תזכיר חוק לעריכה עצמית — מי שכבר שם ירוויח</span></div>
+    <div class="timing-row"><span class="timing-icon">🤖</span><span class="timing-text">AI מאפשר margin של 80% — לא היה אפשרי לפני שנה</span></div>
+    <div class="timing-row"><span class="timing-icon">⏰</span><span class="timing-text">ככל שנחכה — יותר מתחרים ייכנסו</span></div>
+  </div>
+
+  <!-- Slide 8: Next Steps -->
+  <div class="slide" data-slide="8">
+    <div class="slide-header">
+      <div class="num">8 / 8</div>
+      <h2>הצעד הראשון</h2>
+      <p>פשוט, מדיד, הפיך</p>
+    </div>
+    <div class="step-row"><div class="step-num">1</div><span class="step-text">את נרשמת להכשרת ייפוי כוח מתמשך</span><span class="step-time">השבוע</span></div>
+    <div class="step-row"><div class="step-num">2</div><span class="step-text">אני בונה אתר + דף נחיתה + צ'אטבוט</span><span class="step-time">72 שעות</span></div>
+    <div class="step-row"><div class="step-num">3</div><span class="step-text">מעלים Google Ads — 50 ₪ ליום</span><span class="step-time">שבוע 2</span></div>
+    <div class="step-row"><div class="step-num">4</div><span class="step-text">לידים מתחילים להגיע — קובעים פגישות</span><span class="step-time">שבוע 3</span></div>
+    <div class="step-row"><div class="step-num">5</div><span class="step-text">את מסיימת הכשרה — מתחילים לסגור תיקים</span><span class="step-time">חודש 1-2</span></div>
+    <div class="closing-box">ההשקעה: 4,000 ₪.
+הסיכון: מינימלי — אם לא עובד, עוצרים.
+הפוטנציאל: עסק שמייצר 50-100K ₪/חודש.</div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">→</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="nextBtn" onclick="navigate(1)">←</button>
+</div>
+
+<script>
+let current = 0;
+const total = 9;
+
+function renderDots() {
+  const dots = document.getElementById('dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('button');
+    d.className = 'dot-btn' + (i === current ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dots.appendChild(d);
+  }
+}
+
+function goTo(idx) {
+  if (idx < 0 || idx >= total) return;
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  current = idx;
+  const slide = document.querySelector(`[data-slide="${current}"]`);
+  slide.classList.add('active');
+  slide.style.animation = 'none';
+  slide.offsetHeight;
+  slide.style.animation = '';
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === total - 1;
+  renderDots();
+}
+
+function navigate(dir) { goTo(current + dir); }
+
+// Swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) navigate(diff > 0 ? 1 : -1);
+});
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') navigate(1);
+  if (e.key === 'ArrowRight' || e.key === 'ArrowUp') navigate(-1);
+});
+
+renderDots();
+document.getElementById('prevBtn').disabled = true;
+</script>
+
+</body>
+</html>
