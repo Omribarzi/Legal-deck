@@ -472,6 +472,24 @@ body {
       מדורג לפי הציון המשוקלל. כל הזדמנות כוללת ניתוח ביקוש, תחרות, ומסלול ריאלי ל-500K ש"ח/חודש.
     </div>
 
+    <!-- Warning box about data accuracy -->
+    <div style="background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(234,179,8,0.08));
+                border: 1px solid rgba(239,68,68,0.25); border-radius: 14px;
+                padding: 20px 24px; margin-bottom: 24px;">
+      <div style="font-size: 16px; font-weight: 800; color: #ef4444; margin-bottom: 8px;">
+        אזהרה חשובה — נתונים לא מאומתים
+      </div>
+      <div style="font-size: 14px; color: #94a3b8; line-height: 1.8;">
+        הציונים, נפחי החיפוש ורמות התחרות להלן הם <strong style="color:#eab308;">הערכות ראשוניות בלבד</strong>,
+        לא מבוססים על מחקר בזמן אמת ב-Ahrefs, Google Keyword Planner או כל כלי SEO.
+        <br>
+        <strong style="color:#ef4444;">דוגמה:</strong> "השוואת ביטוחים" סומנה בהתחלה כ"תחרות בינונית" עם ציון 89 —
+        אבל מחקר בפועל חשף שוק תחרותי מאוד (Wobi, Bestie, Trusty ועוד). הציון תוקן ל-62.
+        <br><br>
+        <strong style="color:#22d3ee;">מה לעשות:</strong> חובה לאמת כל נישה עם הכלים ברשימת ה-API למטה לפני השקעה.
+      </div>
+    </div>
+
     <div class="filter-bar">
       <button class="filter-btn active" onclick="filterOpps('all')">הכל</button>
       <button class="filter-btn" onclick="filterOpps('service')">שירותים</button>
@@ -516,35 +534,47 @@ body {
         </div>
       </div>
 
-      <!-- OPP 2 -->
-      <div class="opp-card top-pick" data-cat="leadgen marketplace">
+      <!-- OPP 2 — CORRECTED: High competition -->
+      <div class="opp-card" data-cat="leadgen marketplace">
         <div class="opp-header">
           <div class="opp-title-wrap">
-            <div class="opp-rank gold">TOP PICK #2</div>
+            <div class="opp-rank red" style="color:#ef4444;">UPDATED — תחרות גבוהה</div>
             <div class="opp-title">השוואת ביטוחים + הלוואות אונליין</div>
             <div class="opp-subtitle">פלטפורמה להשוואת מחירים בביטוח רכב, דירה, חיים, והלוואות</div>
           </div>
           <div class="opp-score-wrap">
-            <div class="opp-score">89</div>
-            <div class="opp-score-label">ציון משוקלל</div>
+            <div class="opp-score" style="background: linear-gradient(135deg, #ef4444, #f97316); -webkit-background-clip: text;">62</div>
+            <div class="opp-score-label">ציון מעודכן (היה 89)</div>
           </div>
         </div>
         <div class="opp-body">
           <div class="opp-metrics">
             <div class="opp-metric"><div class="opp-metric-val">200K+</div><div class="opp-metric-label">חיפושים/חודש</div></div>
-            <div class="opp-metric"><div class="opp-metric-val">בינונית</div><div class="opp-metric-label">תחרות SEO</div></div>
+            <div class="opp-metric"><div class="opp-metric-val" style="color:#ef4444;">גבוהה מאוד</div><div class="opp-metric-label">תחרות SEO</div></div>
             <div class="opp-metric"><div class="opp-metric-val">300-2,000 ש"ח</div><div class="opp-metric-label">עמלה לליד</div></div>
             <div class="opp-metric"><div class="opp-metric-val">90%+</div><div class="opp-metric-label">מרווח רווח</div></div>
           </div>
-          <div class="opp-desc">
-            <strong>למה גבוה:</strong> שוק הביטוח בישראל — 70+ מיליארד ש"ח בשנה. אנשים מחפשים "ביטוח רכב זול", "השוואת ביטוח דירה" — חיפושים high-intent עם CPC גבוה. חברות הביטוח משלמות 300-2,000 ש"ח על ליד מוסמך. בישראל אין עדיין "Compare the Market" אמיתי.
+          <div class="opp-desc" style="border-right-color: rgba(239,68,68,0.5);">
+            <strong style="color:#ef4444;">עדכון — השוק כבר תפוס:</strong> בניגוד להערכה הראשונית, שוק השוואת הביטוחים בישראל כבר תחרותי מאוד. שחקנים קיימים:
+            <br>
+            <strong>Wobi</strong> — אתר ההשוואה המוביל, 11 חברות ביטוח. SEO חזק.
+            <br>
+            <strong>בסטי (Bestie)</strong> — השוואה + מדריכים + SEO מבוסס.
+            <br>
+            <strong>שוק הביטוח</strong> — שחקן חדש, סריקת 12 חברות בזמן אמת.
+            <br>
+            <strong>2bit.co.il, Hova</strong> — השוואת ביטוח רכב ספציפי.
+            <br>
+            <strong>Trusty</strong> — מרקטפלייס InsurTech, 60+ מפיצים.
             <br><br>
-            <strong>מסלול ל-500K:</strong> 500 לידים/חודש × 1,000 ש"ח עמלה ממוצעת = 500K. SEO + תוכן השוואתי + כלים (מחשבון ביטוח) יכולים להגיע לשם תוך 8-12 חודשים.
+            בנוסף, Munich Re, AXA ו-Sompo משקיעים בסטארטאפים ישראליים בתחום. הכניסה לשוק הזה דורשת השקעה משמעותית ב-SEO ו-branding כדי להתחרות עם שחקנים מבוססים.
+            <br><br>
+            <strong>הלקח:</strong> ביקוש גבוה ≠ הזדמנות טובה. צריך תמיד לבדוק מי כבר שם.
           </div>
           <div class="opp-tags">
-            <span class="opp-tag seo">SEO + תוכן</span>
+            <span class="opp-tag" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">תחרות גבוהה</span>
             <span class="opp-tag high-margin">עמלות גבוהות</span>
-            <span class="opp-tag scalable">סקייל אינסופי</span>
+            <span class="opp-tag" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">Wobi + Bestie + Trusty כבר שם</span>
           </div>
         </div>
       </div>
@@ -570,7 +600,7 @@ body {
             <div class="opp-metric"><div class="opp-metric-val">85%</div><div class="opp-metric-label">מרווח רווח</div></div>
           </div>
           <div class="opp-desc">
-            <strong>למה:</strong> 600,000+ דירות להשכרה בישראל, רובן מנוהלות ב-WhatsApp ואקסל. אין פלטפורמה ישראלית דומיננטית לניהול נכסים. בעלי דירות מחפשים "חוזה שכירות", "ניהול נכס", "גביית שכר דירה" — ואין להם פתרון טוב.
+            <strong>למה:</strong> 600,000+ דירות להשכרה בישראל, רובן מנוהלות ב-WhatsApp ואקסל. יש שחקנים כמו WeCheck (בדיקת דיירים, ערבויות שכירות) אבל אין פלטפורמה שלמה לניהול שוטף של נכסים. בעלי דירות מחפשים "חוזה שכירות", "ניהול נכס", "גביית שכר דירה".
             <br><br>
             <strong>מסלול ל-500K:</strong> SaaS — 200 ש"ח/חודש × 2,500 נכסים = 500K. או: 500 ש"ח/חודש × 1,000 נכסים. מודל freemium → premium. מתחיל עם כלים חינמיים (מחשבון תשואה, חוזה שכירות) שמושכים SEO.
           </div>
