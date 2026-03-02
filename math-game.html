@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>מסע בחלל - הרפתקת מתמטיקה</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e27;--bg2:#111640;--purple:#7c3aed;--cyan:#22d3ee;
+  --green:#22c55e;--red:#ef4444;--orange:#f59e0b;--pink:#ec4899;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);
+  display:flex;flex-direction:column;
+  -webkit-user-select:none;user-select:none;
+}
+/* Stars background */
+body::before{
+  content:'';position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;
+  background:
+    radial-gradient(1px 1px at 10% 20%,#fff 50%,transparent 100%),
+    radial-gradient(1px 1px at 30% 70%,#fff 50%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 50% 10%,rgba(255,255,255,0.8) 50%,transparent 100%),
+    radial-gradient(1px 1px at 70% 40%,#fff 50%,transparent 100%),
+    radial-gradient(1px 1px at 90% 80%,#fff 50%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 15% 90%,rgba(255,255,255,0.7) 50%,transparent 100%),
+    radial-gradient(1px 1px at 85% 15%,#fff 50%,transparent 100%),
+    radial-gradient(1px 1px at 45% 55%,rgba(255,255,255,0.6) 50%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 85%,rgba(255,255,255,0.8) 50%,transparent 100%),
+    radial-gradient(1px 1px at 25% 35%,#fff 50%,transparent 100%),
+    radial-gradient(1px 1px at 75% 65%,rgba(255,255,255,0.7) 50%,transparent 100%),
+    radial-gradient(1px 1px at 5% 50%,#fff 50%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 95% 45%,rgba(255,255,255,0.9) 50%,transparent 100%),
+    radial-gradient(1px 1px at 40% 95%,#fff 50%,transparent 100%),
+    radial-gradient(1px 1px at 55% 30%,rgba(255,255,255,0.5) 50%,transparent 100%);
+  pointer-events:none;
+}
+.screen{
+  display:none;flex-direction:column;height:100vh;
+  position:relative;z-index:1;overflow-y:auto;
+}
+.screen.active{display:flex}
+.container{max-width:500px;margin:0 auto;padding:16px;width:100%}
+
+/* ===== WELCOME SCREEN ===== */
+#welcome-screen{align-items:center;justify-content:center;text-align:center}
+.welcome-rocket{font-size:80px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.welcome-title{
+  font-size:clamp(32px,7vw,48px);font-weight:900;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin:16px 0 8px;
+}
+.welcome-sub{font-size:18px;color:var(--text2);margin-bottom:32px}
+.welcome-input{
+  width:min(280px,80vw);padding:14px 20px;border-radius:16px;
+  border:2px solid rgba(124,58,237,0.3);background:rgba(17,22,64,0.8);
+  color:var(--text);font-family:'Heebo';font-size:18px;text-align:center;
+  outline:none;transition:border 0.3s;
+}
+.welcome-input:focus{border-color:var(--purple)}
+.welcome-input::placeholder{color:var(--text3)}
+.btn{
+  padding:14px 32px;border-radius:16px;border:none;
+  font-family:'Heebo';font-size:16px;font-weight:700;cursor:pointer;
+  transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;
+}
+.btn:active{transform:scale(0.96)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--purple),#6d28d9);
+  color:#fff;box-shadow:0 4px 20px rgba(124,58,237,0.4);
+}
+.btn-primary:hover{box-shadow:0 6px 30px rgba(124,58,237,0.6)}
+.btn-secondary{
+  background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:var(--text);
+}
+.btn-sm{padding:10px 20px;font-size:14px;border-radius:12px}
+.btn:disabled{opacity:0.4;cursor:default}
+.mt-16{margin-top:16px}
+.mt-24{margin-top:24px}
+
+/* ===== DASHBOARD ===== */
+.dash-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;
+}
+.dash-player{display:flex;align-items:center;gap:10px}
+.dash-avatar{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.dash-name{font-weight:700;font-size:16px}
+.dash-level{font-size:12px;color:var(--cyan)}
+.dash-streak{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);
+  border-radius:20px;padding:6px 14px;font-size:14px;font-weight:600;color:var(--orange);
+}
+.xp-section{margin:16px 0}
+.xp-bar-outer{
+  height:20px;border-radius:10px;background:rgba(124,58,237,0.15);
+  border:1px solid rgba(124,58,237,0.2);overflow:hidden;position:relative;
+}
+.xp-bar-inner{
+  height:100%;border-radius:10px;
+  background:linear-gradient(90deg,var(--purple),var(--cyan));
+  transition:width 0.5s ease;
+}
+.xp-label{
+  display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-top:4px;
+}
+.dash-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0;
+}
+.dash-stat{
+  background:var(--bg2);border-radius:14px;padding:14px;text-align:center;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.dash-stat-num{font-size:24px;font-weight:800;color:var(--cyan)}
+.dash-stat-label{font-size:11px;color:var(--text3);margin-top:2px}
+.section-title{
+  font-size:18px;font-weight:700;margin:20px 0 12px;
+  display:flex;align-items:center;gap:8px;
+}
+.galaxy-card{
+  background:var(--bg2);border-radius:16px;padding:16px;margin-bottom:10px;
+  border:1px solid rgba(255,255,255,0.05);cursor:pointer;
+  transition:all 0.2s;display:flex;align-items:center;gap:14px;
+}
+.galaxy-card:hover{border-color:rgba(124,58,237,0.3);transform:translateX(-2px)}
+.galaxy-card.locked{opacity:0.5;cursor:default}
+.galaxy-card.locked:hover{border-color:rgba(255,255,255,0.05);transform:none}
+.galaxy-icon{font-size:36px;flex-shrink:0}
+.galaxy-info{flex:1}
+.galaxy-name{font-weight:700;font-size:15px}
+.galaxy-grade{font-size:12px;color:var(--text3)}
+.galaxy-progress{
+  height:6px;border-radius:3px;background:rgba(124,58,237,0.15);margin-top:8px;overflow:hidden;
+}
+.galaxy-progress-bar{
+  height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--purple),var(--cyan));
+  transition:width 0.5s;
+}
+.galaxy-stars{display:flex;gap:2px;font-size:12px;color:var(--text3)}
+.galaxy-lock{font-size:20px;color:var(--text3)}
+
+/* ===== GALAXY MAP ===== */
+.map-header{
+  display:flex;align-items:center;gap:12px;padding:12px 0;
+}
+.back-btn{
+  width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.1);
+  background:rgba(17,22,64,0.8);color:var(--text);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.map-title{font-size:20px;font-weight:800}
+.map-subtitle{font-size:13px;color:var(--text3)}
+.planet-list{padding:8px 0}
+.planet-card{
+  background:var(--bg2);border-radius:16px;padding:16px;margin-bottom:10px;
+  border:1px solid rgba(255,255,255,0.05);
+  display:flex;align-items:center;gap:14px;cursor:pointer;
+  transition:all 0.2s;
+}
+.planet-card:hover{border-color:rgba(34,211,238,0.3);transform:translateX(-2px)}
+.planet-card.locked{opacity:0.45;cursor:default}
+.planet-card.locked:hover{border-color:rgba(255,255,255,0.05);transform:none}
+.planet-card.completed{border-color:rgba(34,197,94,0.3)}
+.planet-icon{font-size:32px;flex-shrink:0}
+.planet-info{flex:1}
+.planet-name{font-weight:700;font-size:15px}
+.planet-desc{font-size:12px;color:var(--text3);margin-top:2px}
+.planet-mastery{
+  height:5px;border-radius:3px;background:rgba(124,58,237,0.15);margin-top:8px;overflow:hidden;
+}
+.planet-mastery-bar{
+  height:100%;border-radius:3px;transition:width 0.5s;
+}
+.planet-stars-display{display:flex;gap:3px;font-size:14px}
+.planet-lock{font-size:18px;color:var(--text3)}
+
+/* ===== EXERCISE SCREEN ===== */
+.exercise-header{
+  display:flex;align-items:center;justify-content:space-between;padding:12px 0;
+}
+.exercise-progress{
+  flex:1;margin:0 12px;height:8px;border-radius:4px;
+  background:rgba(124,58,237,0.15);overflow:hidden;
+}
+.exercise-progress-bar{
+  height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--green));
+  transition:width 0.3s;
+}
+.exercise-count{font-size:13px;color:var(--text2);font-weight:600;min-width:40px;text-align:left}
+.exercise-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:16px 0}
+.exercise-planet-name{
+  font-size:13px;color:var(--cyan);font-weight:600;text-align:center;margin-bottom:8px;
+}
+.exercise-question{
+  font-size:clamp(24px,5vw,36px);font-weight:800;text-align:center;
+  padding:24px 16px;background:var(--bg2);border-radius:20px;
+  border:1px solid rgba(255,255,255,0.05);min-height:100px;
+  display:flex;align-items:center;justify-content:center;
+  line-height:1.4;
+}
+.exercise-hint{
+  font-size:13px;color:var(--text3);text-align:center;margin-top:8px;
+}
+.answer-section{padding:16px 0}
+.answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.answer-btn{
+  padding:16px;border-radius:14px;border:2px solid rgba(255,255,255,0.1);
+  background:var(--bg2);color:var(--text);font-family:'Heebo';
+  font-size:clamp(18px,4vw,24px);font-weight:700;cursor:pointer;
+  transition:all 0.2s;min-height:60px;
+}
+.answer-btn:hover{border-color:rgba(124,58,237,0.4)}
+.answer-btn:active{transform:scale(0.97)}
+.answer-btn.correct{
+  background:rgba(34,197,94,0.2);border-color:var(--green);color:var(--green);
+}
+.answer-btn.wrong{
+  background:rgba(239,68,68,0.2);border-color:var(--red);color:var(--red);
+}
+.answer-btn.reveal{
+  background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.5);
+}
+.answer-input-wrap{display:flex;gap:10px;justify-content:center}
+.answer-input{
+  width:140px;padding:14px;border-radius:14px;
+  border:2px solid rgba(124,58,237,0.3);background:var(--bg2);
+  color:var(--text);font-family:'Heebo';font-size:24px;font-weight:700;
+  text-align:center;outline:none;
+}
+.answer-input:focus{border-color:var(--purple)}
+.answer-input.correct{border-color:var(--green);color:var(--green)}
+.answer-input.wrong{border-color:var(--red);color:var(--red)}
+.tf-buttons{display:flex;gap:12px;justify-content:center}
+.tf-btn{
+  flex:1;max-width:150px;padding:16px;border-radius:14px;
+  border:2px solid rgba(255,255,255,0.1);background:var(--bg2);
+  color:var(--text);font-family:'Heebo';font-size:20px;font-weight:700;
+  cursor:pointer;transition:all 0.2s;
+}
+.feedback-bar{
+  padding:12px 16px;border-radius:12px;text-align:center;
+  font-size:16px;font-weight:700;margin-top:12px;
+  animation:slideUp 0.3s ease;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.feedback-bar.correct{background:rgba(34,197,94,0.15);color:var(--green)}
+.feedback-bar.wrong{background:rgba(239,68,68,0.15);color:var(--red)}
+.streak-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(245,158,11,0.2);color:var(--orange);
+  padding:2px 8px;border-radius:8px;font-size:13px;margin-right:8px;
+}
+
+/* ===== RESULTS SCREEN ===== */
+#results-screen{align-items:center;justify-content:center;text-align:center}
+.results-icon{font-size:72px;animation:float 3s ease-in-out infinite}
+.results-title{font-size:28px;font-weight:800;margin:16px 0 4px}
+.results-subtitle{font-size:15px;color:var(--text2)}
+.results-stars{font-size:48px;margin:20px 0;letter-spacing:8px}
+.results-stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0;width:min(300px,80vw);
+}
+.results-stat{
+  background:var(--bg2);border-radius:14px;padding:14px;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.results-stat-num{font-size:22px;font-weight:800;color:var(--cyan)}
+.results-stat-label{font-size:11px;color:var(--text3);margin-top:2px}
+.results-xp{
+  font-size:20px;font-weight:700;color:var(--purple);margin:12px 0;
+}
+.results-buttons{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+.level-up-banner{
+  background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(34,211,238,0.2));
+  border:1px solid rgba(124,58,237,0.4);border-radius:16px;
+  padding:14px 20px;margin:12px 0;
+  font-size:16px;font-weight:700;color:var(--cyan);
+  animation:pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.7}}
+
+/* ===== ACHIEVEMENTS ===== */
+.achievements-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:8px 0;
+}
+.achievement-card{
+  background:var(--bg2);border-radius:14px;padding:14px;text-align:center;
+  border:1px solid rgba(255,255,255,0.05);transition:all 0.2s;
+}
+.achievement-card.unlocked{
+  border-color:rgba(245,158,11,0.3);
+  background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(124,58,237,0.08));
+}
+.achievement-card.locked{opacity:0.4}
+.achievement-icon{font-size:32px;margin-bottom:6px}
+.achievement-name{font-size:12px;font-weight:700}
+.achievement-desc{font-size:10px;color:var(--text3);margin-top:3px}
+
+/* ===== CONFETTI ===== */
+.confetti-container{
+  position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:100;overflow:hidden;
+}
+.confetti-piece{
+  position:absolute;width:10px;height:10px;top:-10px;
+  animation:confettiFall 3s linear forwards;
+}
+@keyframes confettiFall{
+  0%{transform:translateY(0) rotate(0deg);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+
+/* Bottom nav */
+.bottom-nav{
+  display:flex;justify-content:center;gap:8px;padding:10px 16px 16px;
+  background:linear-gradient(to top,var(--bg) 60%,transparent);
+  position:sticky;bottom:0;z-index:5;
+}
+.nav-item{
+  padding:10px 20px;border-radius:12px;border:none;
+  background:transparent;color:var(--text3);font-family:'Heebo';
+  font-size:13px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;gap:6px;transition:all 0.2s;
+}
+.nav-item.active{background:rgba(124,58,237,0.15);color:var(--cyan)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(124,58,237,0.3);border-radius:2px}
+
+/* Animations */
+.fade-in{animation:fadeIn 0.4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.shake{animation:shake 0.4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+</style>
+</head>
+<body>
+
+<!-- ===== WELCOME SCREEN ===== -->
+<div class="screen active" id="welcome-screen">
+  <div class="container" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh">
+    <div class="welcome-rocket">🚀</div>
+    <div class="welcome-title">מסע בחלל</div>
+    <div class="welcome-sub">הרפתקת מתמטיקה מכיתה ב׳ עד ו׳</div>
+    <input type="text" class="welcome-input" id="playerNameInput" placeholder="מה השם שלך?" maxlength="20" autocomplete="off">
+    <button class="btn btn-primary mt-24" id="startBtn" disabled onclick="startGame()">
+      יאללה, טסים! 🚀
+    </button>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD SCREEN ===== -->
+<div class="screen" id="dashboard-screen">
+  <div class="container">
+    <div class="dash-header">
+      <div class="dash-player">
+        <div class="dash-avatar">🧑‍🚀</div>
+        <div>
+          <div class="dash-name" id="dashName"></div>
+          <div class="dash-level" id="dashLevel"></div>
+        </div>
+      </div>
+      <div class="dash-streak" id="dashStreak">🔥 <span id="streakCount">0</span></div>
+    </div>
+    <div class="xp-section">
+      <div class="xp-bar-outer"><div class="xp-bar-inner" id="xpBar" style="width:0%"></div></div>
+      <div class="xp-label"><span id="xpText">0 / 100 XP</span><span id="xpLevelText">רמה 1</span></div>
+    </div>
+    <div class="dash-stats">
+      <div class="dash-stat"><div class="dash-stat-num" id="statStars">0</div><div class="dash-stat-label">כוכבים</div></div>
+      <div class="dash-stat"><div class="dash-stat-num" id="statCorrect">0</div><div class="dash-stat-label">תשובות נכונות</div></div>
+      <div class="dash-stat"><div class="dash-stat-num" id="statPlanets">0</div><div class="dash-stat-label">כוכבים נכבשו</div></div>
+    </div>
+    <div class="section-title">🌌 הגלקסיות שלך</div>
+    <div id="galaxyList"></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="showScreen('dashboard-screen')">🏠 ראשי</button>
+    <button class="nav-item" onclick="showScreen('achievements-screen')">🏆 הישגים</button>
+  </div>
+</div>
+
+<!-- ===== GALAXY MAP SCREEN ===== -->
+<div class="screen" id="galaxy-screen">
+  <div class="container">
+    <div class="map-header">
+      <button class="back-btn" onclick="showScreen('dashboard-screen')">→</button>
+      <div>
+        <div class="map-title" id="galaxyTitle"></div>
+        <div class="map-subtitle" id="galaxySubtitle"></div>
+      </div>
+    </div>
+    <div class="planet-list" id="planetList"></div>
+  </div>
+</div>
+
+<!-- ===== EXERCISE SCREEN ===== -->
+<div class="screen" id="exercise-screen">
+  <div class="container" style="display:flex;flex-direction:column;min-height:100vh">
+    <div class="exercise-header">
+      <button class="back-btn" onclick="exitExercise()">→</button>
+      <div class="exercise-progress"><div class="exercise-progress-bar" id="exerciseProgressBar"></div></div>
+      <div class="exercise-count" id="exerciseCount"></div>
+    </div>
+    <div class="exercise-body" id="exerciseBody"></div>
+    <div id="answerSection" class="answer-section"></div>
+    <div id="feedbackBar"></div>
+  </div>
+</div>
+
+<!-- ===== RESULTS SCREEN ===== -->
+<div class="screen" id="results-screen">
+  <div class="container" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh">
+    <div id="resultsContent"></div>
+  </div>
+</div>
+
+<!-- ===== ACHIEVEMENTS SCREEN ===== -->
+<div class="screen" id="achievements-screen">
+  <div class="container">
+    <div class="map-header">
+      <button class="back-btn" onclick="showScreen('dashboard-screen')">→</button>
+      <div><div class="map-title">🏆 הישגים</div><div class="map-subtitle">האוסף שלך</div></div>
+    </div>
+    <div class="achievements-grid" id="achievementsList"></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-item" onclick="showScreen('dashboard-screen')">🏠 ראשי</button>
+    <button class="nav-item active" onclick="showScreen('achievements-screen')">🏆 הישגים</button>
+  </div>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+// ============================================================
+// CURRICULUM DATA
+// ============================================================
+const GALAXIES = [
+  {
+    id:'g2', name:'גלקסיית המספרים', grade:'כיתה ב׳', icon:'🌍', color:'#22d3ee',
+    planets:[
+      {id:'p_add100',name:'כוכב החיבור',icon:'➕',desc:'חיבור עד 100',
+        gen:(t)=>genArith('+',t===1?20:t===2?50:100,t)},
+      {id:'p_sub100',name:'כוכב החיסור',icon:'➖',desc:'חיסור עד 100',
+        gen:(t)=>genArith('-',t===1?20:t===2?50:100,t)},
+      {id:'p_mul5',name:'כוכב הכפל',icon:'✖️',desc:'כפל עד 5',
+        gen:(t)=>genArith('*',t===1?3:t===2?5:5,t)},
+      {id:'p_seq2',name:'כוכב הסדרות',icon:'🔢',desc:'סדרות מספרים',
+        gen:(t)=>genSequence(t===1?2:t===2?5:10,t)},
+      {id:'p_word2',name:'כוכב הסיפורים',icon:'📖',desc:'בעיות מילוליות',
+        gen:(t)=>genWordProblem(2,t)},
+    ]
+  },
+  {
+    id:'g3', name:'גלקסיית הכפל', grade:'כיתה ג׳', icon:'🪐', color:'#a78bfa',
+    planets:[
+      {id:'p_mul10',name:'כוכב לוח הכפל',icon:'✖️',desc:'לוח הכפל עד 10',
+        gen:(t)=>genArith('*',t===1?5:t===2?8:10,t)},
+      {id:'p_div',name:'כוכב החילוק',icon:'➗',desc:'חילוק בסיסי',
+        gen:(t)=>genDivision(t===1?5:t===2?8:10,t)},
+      {id:'p_frac_intro',name:'כוכב השברים',icon:'🍕',desc:'שברים פשוטים',
+        gen:(t)=>genFracIntro(t)},
+      {id:'p_measure',name:'כוכב המדידה',icon:'📏',desc:'מדידה — אורך ומשקל',
+        gen:(t)=>genMeasure(t)},
+      {id:'p_word3',name:'כוכב האתגר',icon:'🧩',desc:'בעיות מילוליות מורכבות',
+        gen:(t)=>genWordProblem(3,t)},
+    ]
+  },
+  {
+    id:'g4', name:'גלקסיית העומק', grade:'כיתה ד׳', icon:'🌟', color:'#f59e0b',
+    planets:[
+      {id:'p_mul_multi',name:'כוכב הכפל הגדול',icon:'✖️',desc:'כפל רב-ספרתי',
+        gen:(t)=>genMultiDigitMul(t)},
+      {id:'p_longdiv',name:'כוכב החילוק הארוך',icon:'➗',desc:'חילוק ארוך',
+        gen:(t)=>genLongDiv(t)},
+      {id:'p_frac_comp',name:'כוכב השברים 2',icon:'🍕',desc:'השוואה וחיבור שברים',
+        gen:(t)=>genFracCompare(t)},
+      {id:'p_decimals',name:'כוכב העשרוניים',icon:'🔵',desc:'מספרים עשרוניים',
+        gen:(t)=>genDecimals(t)},
+      {id:'p_area',name:'כוכב השטח',icon:'📐',desc:'היקף ושטח',
+        gen:(t)=>genArea(t)},
+    ]
+  },
+  {
+    id:'g5', name:'גלקסיית החוכמה', grade:'כיתה ה׳', icon:'💫', color:'#ec4899',
+    planets:[
+      {id:'p_frac_ops',name:'כוכב פעולות בשברים',icon:'🍕',desc:'כפל וחילוק שברים',
+        gen:(t)=>genFracOps(t)},
+      {id:'p_dec_ops',name:'כוכב פעולות בעשרוניים',icon:'🔵',desc:'חיבור וחיסור עשרוניים',
+        gen:(t)=>genDecOps(t)},
+      {id:'p_percent',name:'כוכב האחוזים',icon:'💯',desc:'אחוזים בסיסיים',
+        gen:(t)=>genPercent(t)},
+      {id:'p_order',name:'כוכב סדר הפעולות',icon:'🧮',desc:'סדר פעולות חשבון',
+        gen:(t)=>genOrderOps(t)},
+      {id:'p_word5',name:'כוכב החידות',icon:'🧩',desc:'בעיות מילוליות מתקדמות',
+        gen:(t)=>genWordProblem(5,t)},
+    ]
+  },
+  {
+    id:'g6', name:'גלקסיית האלגברה', grade:'כיתה ו׳', icon:'🌠', color:'#22c55e',
+    planets:[
+      {id:'p_ratio',name:'כוכב היחסים',icon:'⚖️',desc:'יחס ופרופורציה',
+        gen:(t)=>genRatio(t)},
+      {id:'p_percent_adv',name:'כוכב האחוזים 2',icon:'💯',desc:'אחוזים מתקדמים',
+        gen:(t)=>genPercentAdv(t)},
+      {id:'p_negative',name:'כוכב השליליים',icon:'🌡️',desc:'מספרים שליליים',
+        gen:(t)=>genNegative(t)},
+      {id:'p_algebra',name:'כוכב האלגברה',icon:'🔤',desc:'ביטויים אלגבריים',
+        gen:(t)=>genAlgebra(t)},
+      {id:'p_stats',name:'כוכב הסטטיסטיקה',icon:'📊',desc:'ממוצע, חציון ומצב',
+        gen:(t)=>genStats(t)},
+    ]
+  }
+];
+
+const ACHIEVEMENTS = [
+  {id:'first_correct',name:'צעד ראשון',desc:'תשובה נכונה ראשונה',icon:'⭐'},
+  {id:'first_star',name:'כוכב ראשון',desc:'השג כוכב ראשון בכוכב לכת',icon:'🌟'},
+  {id:'three_stars',name:'מושלם!',desc:'השג 3 כוכבים בכוכב לכת',icon:'🏅'},
+  {id:'streak_3',name:'להבה קטנה',desc:'רצף של 3 ימים',icon:'🔥'},
+  {id:'streak_7',name:'להבה גדולה',desc:'רצף של 7 ימים',icon:'🔥'},
+  {id:'streak_30',name:'מכונה!',desc:'רצף של 30 יום',icon:'💎'},
+  {id:'correct_50',name:'חצי מאה',desc:'50 תשובות נכונות',icon:'🎯'},
+  {id:'correct_100',name:'מאה!',desc:'100 תשובות נכונות',icon:'💪'},
+  {id:'correct_500',name:'מאסטר',desc:'500 תשובות נכונות',icon:'🧠'},
+  {id:'galaxy_1',name:'חוקר מתחיל',desc:'סיים את גלקסיית כיתה ב׳',icon:'🌍'},
+  {id:'galaxy_2',name:'חוקר מנוסה',desc:'סיים את גלקסיית כיתה ג׳',icon:'🪐'},
+  {id:'galaxy_3',name:'חוקר מומחה',desc:'סיים את גלקסיית כיתה ד׳',icon:'🌟'},
+  {id:'galaxy_4',name:'חוקר על',desc:'סיים את גלקסיית כיתה ה׳',icon:'💫'},
+  {id:'galaxy_5',name:'אלוף הגלקסיה',desc:'סיים את כל הגלקסיות!',icon:'🏆'},
+  {id:'level_10',name:'רמה 10',desc:'הגעת לרמה 10',icon:'🚀'},
+  {id:'level_25',name:'רמה 25',desc:'הגעת לרמה 25',icon:'🛸'},
+  {id:'perfect_round',name:'סיבוב מושלם',desc:'10 מ-10 נכונות בסיבוב',icon:'💯'},
+  {id:'speed_demon',name:'ברק!',desc:'ענה נכון על 5 שאלות ב-30 שניות',icon:'⚡'},
+];
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let state = {
+  playerName:'',level:1,xp:0,totalXp:0,streak:0,lastPlayDate:'',
+  planets:{},achievements:[],totalCorrect:0,totalAnswered:0,settings:{sound:true}
+};
+
+const EXERCISES_PER_ROUND = 10;
+const XP_PER_LEVEL = (lvl) => 50 + lvl * 30;
+
+let currentGalaxyIdx = 0;
+let currentPlanetId = '';
+let exercises = [];
+let exerciseIdx = 0;
+let roundCorrect = 0;
+let roundAnswered = 0;
+let currentStreak = 0;
+let roundStartTime = 0;
+let fastAnswers = 0;
+let answered = false;
+
+// ============================================================
+// SAVE / LOAD
+// ============================================================
+function saveState(){localStorage.setItem('mathSpaceState',JSON.stringify(state))}
+function loadState(){
+  const s=localStorage.getItem('mathSpaceState');
+  if(s){state=JSON.parse(s);return true}
+  return false;
+}
+
+// ============================================================
+// EXERCISE GENERATORS
+// ============================================================
+function rnd(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=rnd(0,i);[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function gcd(a,b){return b===0?a:gcd(b,a%b)}
+
+function genArith(op, maxN, tier){
+  let a,b,answer,qText;
+  if(op==='+'){
+    a=rnd(1,maxN);b=rnd(1,maxN-a>0?maxN-a:maxN);
+    answer=a+b;qText=`${a} + ${b} = ?`;
+  } else if(op==='-'){
+    a=rnd(1,maxN);b=rnd(1,a);
+    answer=a-b;qText=`${a} - ${b} = ?`;
+  } else if(op==='*'){
+    a=rnd(1,maxN);b=rnd(1,maxN);
+    answer=a*b;qText=`${a} × ${b} = ?`;
+  }
+  if(tier<=2 || Math.random()<0.5){
+    return mcq(qText,answer,op==='*'?'mul':'num');
+  }
+  return {type:'input',question:qText,answer:String(answer)};
+}
+
+function genDivision(maxN,tier){
+  const b=rnd(1,maxN);const a=b*rnd(1,maxN);
+  const answer=a/b;const qText=`${a} ÷ ${b} = ?`;
+  if(tier<=2 || Math.random()<0.5){return mcq(qText,answer,'num')}
+  return {type:'input',question:qText,answer:String(answer)};
+}
+
+function genSequence(step,tier){
+  const start=rnd(1,20);
+  const s=rnd(1,step);
+  const len=5;
+  const seq=[];for(let i=0;i<len;i++)seq.push(start+s*i);
+  const missingIdx=rnd(2,len-1);
+  const answer=seq[missingIdx];
+  seq[missingIdx]='?';
+  const qText=seq.join(' , ');
+  if(tier<=2){return mcq(qText,answer,'num')}
+  return {type:'input',question:qText,answer:String(answer),hint:'מצא את המספר החסר בסדרה'};
+}
+
+function genWordProblem(grade,tier){
+  const templates2=[
+    ()=>{const a=rnd(3,20);const b=rnd(3,20);return {q:`לדני יש ${a} גולות. הוא קיבל עוד ${b} גולות. כמה גולות יש לו?`,a:a+b}},
+    ()=>{const a=rnd(10,30);const b=rnd(1,a-1);return {q:`בעץ היו ${a} תפוחים. נפלו ${b} תפוחים. כמה נשארו?`,a:a-b}},
+    ()=>{const a=rnd(5,15);const b=rnd(5,15);return {q:`בכיתה יש ${a} בנים ו-${b} בנות. כמה ילדים בכיתה?`,a:a+b}},
+  ];
+  const templates3=[
+    ()=>{const a=rnd(2,8);const b=rnd(3,10);return {q:`ל-${a} ילדים יש ${b} ממתקים כל אחד. כמה ממתקים בסך הכול?`,a:a*b}},
+    ()=>{const a=rnd(3,9);const b=rnd(3,9);const c=rnd(1,10);return {q:`דנה קנתה ${a} מחברות ב-${b} ₪ כל אחת. שילמה עם שטר של ${a*b+c} ₪. כמה עודף קיבלה?`,a:c}},
+    ()=>{const total=rnd(12,30);const groups=rnd(2,6);const each=Math.floor(total/groups);return {q:`${total} עפרונות חולקו שווה בשווה ל-${groups} ילדים. כמה עפרונות קיבל כל ילד?`,a:each}},
+  ];
+  const templates5=[
+    ()=>{const price=rnd(20,100);const disc=rnd(1,4)*10;return {q:`מחיר חולצה: ${price} ₪. הנחה של ${disc}%. כמה לשלם?`,a:price-price*disc/100}},
+    ()=>{const a=rnd(2,8);const b=rnd(2,8);const c=rnd(1,5);return {q:`חשב: ${a} × ${b} + ${c} = ?`,a:a*b+c}},
+    ()=>{const total=rnd(50,200);const frac=rnd(2,5);return {q:`מתוך ${total} תלמידים, ${1}/${frac} מהם בחרו כדורגל. כמה בחרו כדורגל?`,a:Math.floor(total/frac)}},
+  ];
+  let templates;
+  if(grade<=2) templates=templates2;
+  else if(grade<=3) templates=templates3;
+  else templates=templates5;
+  const t=templates[rnd(0,templates.length-1)]();
+  return mcq(t.q,t.a,'num');
+}
+
+function genFracIntro(tier){
+  const denoms=[2,3,4];
+  const d=denoms[rnd(0,tier<=1?0:tier<=2?1:2)];
+  const n=rnd(1,d-1);
+  if(Math.random()<0.5){
+    const multiplier=rnd(2,5);
+    const total=d*multiplier;
+    const answer=n*multiplier;
+    return mcq(`כמה זה ${n}/${d} מתוך ${total}?`,answer,'num');
+  }
+  const whole=d*rnd(1,3);
+  return mcq(`אם מחלקים ${whole} לחלקים שווים ל-${d} חלקים, כמה בכל חלק?`,whole/d,'num');
+}
+
+function genMeasure(tier){
+  const units=[
+    ()=>{const cm=rnd(1,9)*100;return {q:`כמה מטרים זה ${cm} ס"מ?`,a:cm/100}},
+    ()=>{const m=rnd(1,5);return {q:`כמה ס"מ זה ${m} מטרים?`,a:m*100}},
+    ()=>{const kg=rnd(1,9);return {q:`כמה גרם זה ${kg} ק"ג?`,a:kg*1000}},
+    ()=>{const g=rnd(1,9)*1000;return {q:`כמה ק"ג זה ${g} גרם?`,a:g/1000}},
+  ];
+  const u=units[rnd(0,units.length-1)]();
+  return mcq(u.q,u.a,'num');
+}
+
+function genMultiDigitMul(tier){
+  let a,b;
+  if(tier===1){a=rnd(10,30);b=rnd(2,9)}
+  else if(tier===2){a=rnd(10,50);b=rnd(2,9)}
+  else{a=rnd(10,99);b=rnd(10,30)}
+  const answer=a*b;
+  if(tier<=2){return mcq(`${a} × ${b} = ?`,answer,'num')}
+  return {type:'input',question:`${a} × ${b} = ?`,answer:String(answer)};
+}
+
+function genLongDiv(tier){
+  let divisor,quotient;
+  if(tier===1){divisor=rnd(2,5);quotient=rnd(10,20)}
+  else if(tier===2){divisor=rnd(3,9);quotient=rnd(10,30)}
+  else{divisor=rnd(5,12);quotient=rnd(10,50)}
+  const dividend=divisor*quotient;
+  return mcq(`${dividend} ÷ ${divisor} = ?`,quotient,'num');
+}
+
+function genFracCompare(tier){
+  if(Math.random()<0.5){
+    const d=rnd(2,8);const n1=rnd(1,d-1);let n2=rnd(1,d-1);
+    while(n2===n1)n2=rnd(1,d-1);
+    const bigger=n1>n2?`${n1}/${d}`:`${n2}/${d}`;
+    return {type:'mc',question:`מי גדול יותר: ${n1}/${d} או ${n2}/${d}?`,
+      answer:bigger,options:shuffle([`${n1}/${d}`,`${n2}/${d}`,`שווים`,'אי אפשר לדעת'])};
+  }
+  const d1=rnd(2,6);const d2=rnd(2,6);
+  const n1=rnd(1,d1-1);const n2=rnd(1,d2-1);
+  const g=gcd(n1+n2,d1===d2?d1:d1*d2);
+  if(d1===d2){
+    const ans=`${n1+n2}/${d1}`;
+    return mcq(`${n1}/${d1} + ${n2}/${d2} = ?`,ans,'frac');
+  }
+  const commonD=d1*d2;
+  const sumN=n1*d2+n2*d1;
+  const g2=gcd(sumN,commonD);
+  const ans=`${sumN/g2}/${commonD/g2}`;
+  return mcq(`${n1}/${d1} + ${n2}/${d2} = ?`,ans,'frac');
+}
+
+function genDecimals(tier){
+  if(tier===1){
+    const a=rnd(1,9);const b=rnd(1,9);const c=rnd(1,9);
+    const num1=parseFloat(`${a}.${b}`);
+    const num2=parseFloat(`0.${c}`);
+    const answer=parseFloat((num1+num2).toFixed(1));
+    return mcq(`${num1} + ${num2} = ?`,answer,'dec');
+  }
+  const a=parseFloat((rnd(1,20)/10).toFixed(1));
+  const b=parseFloat((rnd(1,20)/10).toFixed(1));
+  const answer=parseFloat((a+b).toFixed(1));
+  return mcq(`${a} + ${b} = ?`,answer,'dec');
+}
+
+function genArea(tier){
+  if(Math.random()<0.5){
+    const w=rnd(2,tier===1?5:10);const h=rnd(2,tier===1?5:10);
+    return mcq(`מה השטח של מלבן עם אורך ${w} ורוחב ${h}?`,w*h,'num');
+  }
+  const s=rnd(2,tier===1?6:12);
+  return mcq(`מה ההיקף של ריבוע עם צלע ${s}?`,s*4,'num');
+}
+
+function genFracOps(tier){
+  const n1=rnd(1,5);const d1=rnd(2,6);const n2=rnd(1,5);const d2=rnd(2,6);
+  const resN=n1*n2;const resD=d1*d2;const g=gcd(resN,resD);
+  const ans=`${resN/g}/${resD/g}`;
+  return mcq(`${n1}/${d1} × ${n2}/${d2} = ?`,ans,'frac');
+}
+
+function genDecOps(tier){
+  const a=parseFloat((rnd(10,99)/10).toFixed(1));
+  const b=parseFloat((rnd(10,99)/10).toFixed(1));
+  if(Math.random()<0.5){
+    const answer=parseFloat((a+b).toFixed(1));
+    return mcq(`${a} + ${b} = ?`,answer,'dec');
+  }
+  const big=Math.max(a,b);const small=Math.min(a,b);
+  const answer=parseFloat((big-small).toFixed(1));
+  return mcq(`${big} - ${small} = ?`,answer,'dec');
+}
+
+function genPercent(tier){
+  const percents=[10,20,25,50];
+  const p=percents[rnd(0,tier<=1?1:3)];
+  const mult=p===25?4:p===50?2:10;
+  const total=rnd(2,20)*mult;
+  const answer=total*p/100;
+  return mcq(`כמה זה ${p}% מתוך ${total}?`,answer,'num');
+}
+
+function genOrderOps(tier){
+  let q,a;
+  if(tier===1){
+    const x=rnd(2,5);const y=rnd(2,5);const z=rnd(1,5);
+    q=`${x} × ${y} + ${z}`;a=x*y+z;
+  } else if(tier===2){
+    const x=rnd(2,5);const y=rnd(2,5);const z=rnd(1,5);
+    q=`${z} + ${x} × ${y}`;a=z+x*y;
+  } else {
+    const x=rnd(2,6);const y=rnd(1,5);const z=rnd(2,4);const w=rnd(1,5);
+    q=`(${x} + ${y}) × ${z} - ${w}`;a=(x+y)*z-w;
+  }
+  return mcq(`${q} = ?`,a,'num');
+}
+
+function genRatio(tier){
+  const a=rnd(1,5);const b=rnd(1,5);const mult=rnd(2,tier<=1?3:6);
+  return mcq(`אם היחס הוא ${a}:${b} וסך הכול יש ${(a+b)*mult}, כמה בקבוצה הראשונה?`,a*mult,'num');
+}
+
+function genPercentAdv(tier){
+  const price=rnd(5,30)*10;
+  const disc=rnd(1,4)*10;
+  const answer=price-price*disc/100;
+  return mcq(`מחיר: ${price} ₪. הנחה: ${disc}%. מה המחיר לאחר הנחה?`,answer,'num');
+}
+
+function genNegative(tier){
+  if(tier===1){
+    const a=rnd(1,10);const b=rnd(1,10);
+    return mcq(`${a} - ${a+b} = ?`,-(b),'negnum');
+  }
+  const a=rnd(-10,10);const b=rnd(-10,10);
+  const answer=a+b;
+  const bStr=b>=0?`+ ${b}`:`- ${Math.abs(b)}`;
+  return mcq(`(${a}) ${bStr} = ?`,answer,'negnum');
+}
+
+function genAlgebra(tier){
+  const x=rnd(1,tier<=1?5:10);
+  if(tier<=2){
+    const a=rnd(1,5);const b=rnd(1,20);
+    return mcq(`${a} × x = ${a*x}\nx = ?`,x,'num');
+  }
+  const a=rnd(2,5);const b=rnd(1,10);
+  return mcq(`${a}x + ${b} = ${a*x+b}\nx = ?`,x,'num');
+}
+
+function genStats(tier){
+  const len=tier<=1?3:tier<=2?5:7;
+  const nums=[];for(let i=0;i<len;i++)nums.push(rnd(1,20));
+  const sorted=[...nums].sort((a,b)=>a-b);
+  if(Math.random()<0.5){
+    const sum=nums.reduce((s,n)=>s+n,0);
+    const avg=parseFloat((sum/len).toFixed(1));
+    return mcq(`מה הממוצע של: ${nums.join(', ')}?`,avg,'dec');
+  }
+  const median=sorted[Math.floor(len/2)];
+  return mcq(`מה החציון של: ${nums.join(', ')}?`,median,'num');
+}
+
+// MCQ helper
+function mcq(question,answer,type){
+  let options=[answer];
+  const strAns=String(answer);
+  while(options.length<4){
+    let wrong;
+    if(type==='frac'){
+      const parts=strAns.split('/');
+      const n=parseInt(parts[0])+rnd(-2,2);
+      const d=parseInt(parts[1])+rnd(0,2);
+      wrong=`${Math.max(1,n)}/${Math.max(2,d)}`;
+    } else if(type==='dec'){
+      wrong=parseFloat((parseFloat(answer)+(rnd(-3,3)||1)*0.1*(rnd(1,5))).toFixed(1));
+    } else if(type==='negnum'){
+      wrong=parseInt(answer)+(rnd(-4,4)||1);
+    } else {
+      const numAns=parseFloat(answer);
+      const delta=Math.max(1,Math.floor(Math.abs(numAns)*0.3));
+      wrong=numAns+(rnd(-delta,delta)||1);
+    }
+    const wrongStr=String(wrong);
+    if(wrongStr!==strAns && !options.map(String).includes(wrongStr) && wrongStr!=='NaN'){
+      options.push(wrong);
+    }
+  }
+  return {type:'mc',question,answer:strAns,options:shuffle(options.map(String))};
+}
+
+// ============================================================
+// UI FUNCTIONS
+// ============================================================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='dashboard-screen')renderDashboard();
+  if(id==='achievements-screen')renderAchievements();
+}
+
+function startGame(){
+  const name=document.getElementById('playerNameInput').value.trim();
+  if(!name)return;
+  state.playerName=name;
+  updateStreak();
+  saveState();
+  showScreen('dashboard-screen');
+}
+
+function updateStreak(){
+  const today=new Date().toISOString().slice(0,10);
+  if(!state.lastPlayDate){
+    state.streak=1;
+  } else {
+    const last=new Date(state.lastPlayDate);
+    const now=new Date(today);
+    const diff=Math.floor((now-last)/(1000*60*60*24));
+    if(diff===1)state.streak++;
+    else if(diff>1)state.streak=1;
+  }
+  state.lastPlayDate=today;
+  checkAchievement('streak_3',state.streak>=3);
+  checkAchievement('streak_7',state.streak>=7);
+  checkAchievement('streak_30',state.streak>=30);
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard(){
+  document.getElementById('dashName').textContent=state.playerName;
+  document.getElementById('dashLevel').textContent=`רמה ${state.level} - חוקר חלל`;
+  document.getElementById('streakCount').textContent=state.streak;
+  const xpNeeded=XP_PER_LEVEL(state.level);
+  const pct=Math.min(100,Math.round(state.xp/xpNeeded*100));
+  document.getElementById('xpBar').style.width=pct+'%';
+  document.getElementById('xpText').textContent=`${state.xp} / ${xpNeeded} XP`;
+  document.getElementById('xpLevelText').textContent=`רמה ${state.level}`;
+  // Stats
+  let totalStars=0;let completedPlanets=0;
+  Object.values(state.planets).forEach(p=>{totalStars+=p.stars||0;if(p.stars>0)completedPlanets++});
+  document.getElementById('statStars').textContent=totalStars;
+  document.getElementById('statCorrect').textContent=state.totalCorrect;
+  document.getElementById('statPlanets').textContent=completedPlanets;
+  // Galaxy list
+  const list=document.getElementById('galaxyList');
+  list.innerHTML='';
+  GALAXIES.forEach((g,gi)=>{
+    const locked=gi>0 && !isGalaxyUnlocked(gi);
+    const progress=getGalaxyProgress(gi);
+    const card=document.createElement('div');
+    card.className='galaxy-card fade-in'+(locked?' locked':'');
+    card.style.animationDelay=gi*0.05+'s';
+    card.innerHTML=`
+      <div class="galaxy-icon">${g.icon}</div>
+      <div class="galaxy-info">
+        <div class="galaxy-name">${g.name}</div>
+        <div class="galaxy-grade">${g.grade} — ${g.planets.length} כוכבי לכת</div>
+        <div class="galaxy-progress"><div class="galaxy-progress-bar" style="width:${progress}%;background:${g.color}"></div></div>
+      </div>
+      ${locked?'<div class="galaxy-lock">🔒</div>':
+        `<div class="galaxy-stars">${getGalaxyStarsText(gi)}</div>`}
+    `;
+    if(!locked)card.onclick=()=>openGalaxy(gi);
+    list.appendChild(card);
+  });
+}
+
+function isGalaxyUnlocked(gi){
+  if(gi===0)return true;
+  const prevG=GALAXIES[gi-1];
+  return prevG.planets.every(p=>(state.planets[p.id]?.stars||0)>=1);
+}
+
+function getGalaxyProgress(gi){
+  const g=GALAXIES[gi];
+  let total=0;
+  g.planets.forEach(p=>{total+=(state.planets[p.id]?.mastery||0)*100});
+  return Math.round(total/g.planets.length);
+}
+
+function getGalaxyStarsText(gi){
+  const g=GALAXIES[gi];
+  let stars=0;g.planets.forEach(p=>{stars+=state.planets[p.id]?.stars||0});
+  const max=g.planets.length*3;
+  return `${stars}/${max} ⭐`;
+}
+
+// ============================================================
+// GALAXY MAP
+// ============================================================
+function openGalaxy(gi){
+  currentGalaxyIdx=gi;
+  const g=GALAXIES[gi];
+  document.getElementById('galaxyTitle').textContent=g.name;
+  document.getElementById('galaxySubtitle').textContent=g.grade;
+  const list=document.getElementById('planetList');
+  list.innerHTML='';
+  g.planets.forEach((p,pi)=>{
+    const pState=state.planets[p.id]||{mastery:0,stars:0,tier:1,totalAnswered:0,correct:0};
+    const locked=pi>0 && !isPlanetUnlocked(gi,pi);
+    const card=document.createElement('div');
+    card.className='planet-card fade-in'+(locked?' locked':'')+(pState.stars>=1?' completed':'');
+    card.style.animationDelay=pi*0.06+'s';
+    const masteryPct=Math.round(pState.mastery*100);
+    const barColor=masteryPct>=95?'var(--green)':masteryPct>=70?'var(--cyan)':'var(--purple)';
+    card.innerHTML=`
+      <div class="planet-icon">${p.icon}</div>
+      <div class="planet-info">
+        <div class="planet-name">${p.name}</div>
+        <div class="planet-desc">${p.desc}</div>
+        <div class="planet-mastery"><div class="planet-mastery-bar" style="width:${masteryPct}%;background:${barColor}"></div></div>
+      </div>
+      ${locked?'<div class="planet-lock">🔒</div>':
+        `<div class="planet-stars-display">${starsHTML(pState.stars)}</div>`}
+    `;
+    if(!locked)card.onclick=()=>startPlanet(gi,p.id);
+    list.appendChild(card);
+  });
+  showScreen('galaxy-screen');
+}
+
+function isPlanetUnlocked(gi,pi){
+  if(pi===0)return true;
+  const prevP=GALAXIES[gi].planets[pi-1];
+  const ps=state.planets[prevP.id];
+  return ps && ps.mastery>=0.7 && ps.totalAnswered>=10;
+}
+
+function starsHTML(count){
+  let s='';
+  for(let i=0;i<3;i++)s+=i<count?'⭐':'☆';
+  return s;
+}
+
+// ============================================================
+// EXERCISE FLOW
+// ============================================================
+function startPlanet(gi,pid){
+  currentGalaxyIdx=gi;currentPlanetId=pid;
+  const g=GALAXIES[gi];
+  const planet=g.planets.find(p=>p.id===pid);
+  const pState=state.planets[pid]||{mastery:0,stars:0,tier:1,totalAnswered:0,correct:0};
+  state.planets[pid]=pState;
+  exercises=[];
+  for(let i=0;i<EXERCISES_PER_ROUND;i++){
+    exercises.push(planet.gen(pState.tier));
+  }
+  exerciseIdx=0;roundCorrect=0;roundAnswered=0;currentStreak=0;
+  roundStartTime=Date.now();fastAnswers=0;
+  showScreen('exercise-screen');
+  renderExercise();
+}
+
+function renderExercise(){
+  if(exerciseIdx>=exercises.length){showResults();return}
+  const ex=exercises[exerciseIdx];
+  answered=false;
+  const pct=Math.round(exerciseIdx/exercises.length*100);
+  document.getElementById('exerciseProgressBar').style.width=pct+'%';
+  document.getElementById('exerciseCount').textContent=`${exerciseIdx+1}/${exercises.length}`;
+  const planet=findPlanet(currentPlanetId);
+  const body=document.getElementById('exerciseBody');
+  body.innerHTML=`
+    <div class="exercise-planet-name">${planet.icon} ${planet.name}</div>
+    <div class="exercise-question">${ex.question}</div>
+    ${ex.hint?`<div class="exercise-hint">${ex.hint}</div>`:''}
+  `;
+  const section=document.getElementById('answerSection');
+  document.getElementById('feedbackBar').innerHTML='';
+  if(ex.type==='mc'){
+    section.innerHTML=`<div class="answer-grid">${
+      ex.options.map((o,i)=>`<button class="answer-btn" data-val="${i}">${o}</button>`).join('')
+    }</div>`;
+    section.querySelectorAll('.answer-btn').forEach((btn,i)=>{
+      btn.onclick=()=>checkMC(btn,String(ex.options[i]));
+    });
+  } else if(ex.type==='tf'){
+    section.innerHTML=`<div class="tf-buttons">
+      <button class="tf-btn" onclick="checkTF(this,true)">נכון ✓</button>
+      <button class="tf-btn" onclick="checkTF(this,false)">לא נכון ✗</button>
+    </div>`;
+  } else {
+    section.innerHTML=`<div class="answer-input-wrap">
+      <input type="text" inputmode="decimal" class="answer-input" id="ansInput" autocomplete="off"
+        onkeydown="if(event.key==='Enter')checkInput()">
+      <button class="btn btn-primary btn-sm" onclick="checkInput()">בדוק</button>
+    </div>`;
+    setTimeout(()=>{const inp=document.getElementById('ansInput');if(inp)inp.focus()},100);
+  }
+}
+
+
+function checkMC(btn,selected){
+  if(answered)return;
+  answered=true;
+  const ex=exercises[exerciseIdx];
+  const correct=selected===String(ex.answer);
+  processAnswer(correct);
+  btn.classList.add(correct?'correct':'wrong');
+  if(!correct){
+    document.querySelectorAll('.answer-btn').forEach(b=>{
+      if(b.textContent===String(ex.answer))b.classList.add('reveal');
+    });
+  }
+  document.querySelectorAll('.answer-btn').forEach(b=>{b.style.pointerEvents='none'});
+  setTimeout(()=>{exerciseIdx++;renderExercise()},correct?800:1500);
+}
+
+function checkTF(btn,val){
+  if(answered)return;
+  answered=true;
+  const ex=exercises[exerciseIdx];
+  const correct=val===ex.answer;
+  processAnswer(correct);
+  btn.classList.add(correct?'correct':'wrong');
+  setTimeout(()=>{exerciseIdx++;renderExercise()},correct?800:1500);
+}
+
+function checkInput(){
+  if(answered)return;
+  const inp=document.getElementById('ansInput');
+  if(!inp)return;
+  const val=inp.value.trim();
+  if(!val)return;
+  answered=true;
+  const ex=exercises[exerciseIdx];
+  const correct=val===String(ex.answer);
+  processAnswer(correct);
+  inp.classList.add(correct?'correct':'wrong');
+  if(!correct){
+    document.getElementById('feedbackBar').innerHTML=
+      `<div class="feedback-bar wrong">התשובה הנכונה: ${ex.answer}</div>`;
+  }
+  setTimeout(()=>{exerciseIdx++;renderExercise()},correct?800:1500);
+}
+
+function processAnswer(correct){
+  roundAnswered++;
+  const fb=document.getElementById('feedbackBar');
+  if(correct){
+    roundCorrect++;currentStreak++;
+    state.totalCorrect++;state.totalAnswered++;
+    const timePerQ=(Date.now()-roundStartTime)/1000/roundAnswered;
+    if(timePerQ<6)fastAnswers++;
+    let xpGain=10;
+    if(currentStreak>=5)xpGain+=5;
+    if(currentStreak>=10)xpGain+=5;
+    addXP(xpGain);
+    let streakText='';
+    if(currentStreak>=3)streakText=`<span class="streak-badge">🔥 ${currentStreak} רצף!</span>`;
+    fb.innerHTML=`<div class="feedback-bar correct">${streakText}נכון! +${xpGain} XP</div>`;
+    checkAchievement('first_correct',true);
+    checkAchievement('correct_50',state.totalCorrect>=50);
+    checkAchievement('correct_100',state.totalCorrect>=100);
+    checkAchievement('correct_500',state.totalCorrect>=500);
+  } else {
+    currentStreak=0;
+    state.totalAnswered++;
+    fb.innerHTML=`<div class="feedback-bar wrong">לא נכון 😕</div>`;
+  }
+  // Update planet state
+  const ps=state.planets[currentPlanetId];
+  ps.totalAnswered++;
+  if(correct)ps.correct++;
+  ps.mastery=ps.correct/ps.totalAnswered;
+  // Adaptive tier
+  if(currentStreak>=5 && ps.tier<3)ps.tier++;
+  if(!correct && currentStreak===0 && roundAnswered-roundCorrect>=3 && ps.tier>1)ps.tier--;
+  saveState();
+}
+
+function addXP(amount){
+  state.xp+=amount;state.totalXp+=amount;
+  const needed=XP_PER_LEVEL(state.level);
+  while(state.xp>=needed){
+    state.xp-=XP_PER_LEVEL(state.level);
+    state.level++;
+    checkAchievement('level_10',state.level>=10);
+    checkAchievement('level_25',state.level>=25);
+  }
+  saveState();
+}
+
+function showResults(){
+  const accuracy=roundAnswered>0?Math.round(roundCorrect/roundAnswered*100):0;
+  let stars=0;
+  if(accuracy>=60)stars=1;
+  if(accuracy>=80)stars=2;
+  if(accuracy>=95)stars=3;
+  // Update planet stars
+  const ps=state.planets[currentPlanetId];
+  if(stars>ps.stars)ps.stars=stars;
+  // Bonus XP
+  let bonusXP=0;
+  if(accuracy===100){bonusXP=20;checkAchievement('perfect_round',true)}
+  if(bonusXP)addXP(bonusXP);
+  checkAchievement('first_star',stars>=1);
+  checkAchievement('three_stars',stars>=3);
+  checkAchievement('speed_demon',fastAnswers>=5);
+  // Check galaxy completion
+  GALAXIES.forEach((g,gi)=>{
+    const allDone=g.planets.every(p=>(state.planets[p.id]?.stars||0)>=1);
+    if(allDone){
+      const achIds=['galaxy_1','galaxy_2','galaxy_3','galaxy_4','galaxy_5'];
+      checkAchievement(achIds[gi],true);
+    }
+  });
+  saveState();
+  const planet=findPlanet(currentPlanetId);
+  const icon=accuracy>=95?'🏆':accuracy>=80?'🌟':accuracy>=60?'👍':'💪';
+  const title=accuracy>=95?'מושלם!':accuracy>=80?'מעולה!':accuracy>=60?'יפה!':'נמשיך להתאמן!';
+  const content=document.getElementById('resultsContent');
+  content.innerHTML=`
+    <div class="results-icon">${icon}</div>
+    <div class="results-title">${title}</div>
+    <div class="results-subtitle">${planet.name}</div>
+    <div class="results-stars">${starsHTML(stars)}</div>
+    <div class="results-stats">
+      <div class="results-stat"><div class="results-stat-num">${roundCorrect}/${roundAnswered}</div><div class="results-stat-label">תשובות נכונות</div></div>
+      <div class="results-stat"><div class="results-stat-num">${accuracy}%</div><div class="results-stat-label">דיוק</div></div>
+    </div>
+    ${bonusXP?`<div class="results-xp">+${bonusXP} XP בונוס! 🎉</div>`:''}
+    <div class="results-buttons">
+      <button class="btn btn-primary" onclick="startPlanet(${currentGalaxyIdx},'${currentPlanetId}')">שחק שוב 🔄</button>
+      <button class="btn btn-secondary" onclick="openGalaxy(${currentGalaxyIdx})">חזרה למפה 🗺️</button>
+    </div>
+  `;
+  showScreen('results-screen');
+  if(accuracy>=80)launchConfetti();
+}
+
+function exitExercise(){
+  openGalaxy(currentGalaxyIdx);
+}
+
+function findPlanet(pid){
+  for(const g of GALAXIES)for(const p of g.planets)if(p.id===pid)return p;
+  return null;
+}
+
+// ============================================================
+// ACHIEVEMENTS
+// ============================================================
+function checkAchievement(id,condition){
+  if(!condition||state.achievements.includes(id))return;
+  state.achievements.push(id);
+  saveState();
+}
+
+function renderAchievements(){
+  const list=document.getElementById('achievementsList');
+  list.innerHTML='';
+  ACHIEVEMENTS.forEach(a=>{
+    const unlocked=state.achievements.includes(a.id);
+    const card=document.createElement('div');
+    card.className='achievement-card fade-in'+(unlocked?' unlocked':' locked');
+    card.innerHTML=`
+      <div class="achievement-icon">${a.icon}</div>
+      <div class="achievement-name">${a.name}</div>
+      <div class="achievement-desc">${a.desc}</div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function launchConfetti(){
+  const container=document.getElementById('confettiContainer');
+  const colors=['#7c3aed','#22d3ee','#22c55e','#f59e0b','#ec4899','#ef4444'];
+  for(let i=0;i<50;i++){
+    const piece=document.createElement('div');
+    piece.className='confetti-piece';
+    piece.style.left=Math.random()*100+'%';
+    piece.style.background=colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDelay=Math.random()*2+'s';
+    piece.style.borderRadius=Math.random()>0.5?'50%':'2px';
+    piece.style.width=(5+Math.random()*8)+'px';
+    piece.style.height=(5+Math.random()*8)+'px';
+    container.appendChild(piece);
+  }
+  setTimeout(()=>{container.innerHTML=''},4000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById('playerNameInput').addEventListener('input',function(){
+  document.getElementById('startBtn').disabled=!this.value.trim();
+});
+
+if(loadState() && state.playerName){
+  updateStreak();
+  saveState();
+  showScreen('dashboard-screen');
+}
+</script>
+</body>
+</html>
